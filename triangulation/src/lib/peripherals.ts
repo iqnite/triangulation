@@ -9,8 +9,9 @@ export const PERIPHERAL_POSITIONS = {
     "C": new Position(0, 10)
 }
 
-//signal strength is between 0.0 - 1.0 <-- WRONG, FOR NOW
-//signal strength is actually a distance
+
+//signal strength currently a distance
+//signal strength should be a negative rssi integer
 export class NetworkTarget {
     datapoints: Map<string, number>;
     pos: Position;
@@ -67,11 +68,16 @@ export class NetworkTarget {
         return new Position(x, y);
     }
     addSignalData(peripheralId: string, signalStrength: number) {
-        this.datapoints.set(peripheralId, signalStrength);
+        console.log(`Distance to ${this.address} from ${peripheralId} is ${this.rssiToDistance(signalStrength)}m (RSSI=${signalStrength})`)
+        this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength));
         this.pos = this.triangulate();
     }
     checkIfEnoughDatapoints() {
         return [...this.datapoints.keys()].length >= 3;
+    }
+    rssiToDistance(rssi: number): number {
+        const txPower = -51; // RSSI at 1 meter
+        return Math.pow(10, (txPower - rssi) / (10 * 2));
     }
 }
 
