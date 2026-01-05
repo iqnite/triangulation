@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     if (
         (!body.networkRssis) ||
-        (!body.id)
+        (!body.device)
     ) {
         const response = new Response(null, {
             status: 400, statusText: "Your network request sucks", headers: {
@@ -28,8 +28,9 @@ export async function POST(request: Request) {
         let oldTarget = networkObjects.find((t) => t.address === netw.ssid);
         if (!oldTarget) {
             oldTarget = new NetworkTarget(netw.ssid);
+            networkObjects.push(oldTarget);
         }
-        oldTarget.addSignalData(body.id, netw.rssi);
+        oldTarget.addSignalData(body.device, netw.rssi);
     });
 
     
