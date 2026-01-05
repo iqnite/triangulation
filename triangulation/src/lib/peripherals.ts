@@ -16,10 +16,12 @@ export class NetworkTarget {
     datapoints: Map<string, number>;
     pos: Position;
     address: string;
+    posAverage: Position;
     constructor(address: string) {
         this.address = address;
         this.datapoints = new Map();
         this.pos = new Position(0, 0);
+        this.posAverage = new Position(0, 0);
     }
     triangulate() {
         if (!this.checkIfEnoughDatapoints()) {
@@ -71,6 +73,7 @@ export class NetworkTarget {
         console.log(`Distance to ${this.address} from ${peripheralId} is ${this.rssiToDistance(signalStrength)}m (RSSI=${signalStrength})`)
         this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength));
         this.pos = this.triangulate();
+        this.posAverage = this.posAverage.lerp(this.pos, 0.15);
     }
     checkIfEnoughDatapoints() {
         return [...this.datapoints.keys()].length >= 3;
