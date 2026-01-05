@@ -1,15 +1,23 @@
 import { Position } from "./position";
-
+import { readFileSync } from "fs";
 //const PERIPHERAL_ID_WHITELIST: Array<string> = ["A", "B", "C"];
 //PERIPHERAL_ID_WHITELIST.push(...(process.env.PERI_WHITELIST || "").trim().split(",").map(x => x.trim()));
 
-export const PERIPHERAL_POSITIONS = {
-    "A": new Position(0, 0),
-    "B": new Position(10, 0),
-    "C": new Position(0, 10)
+interface JsonPositions {
+    [address: string]: number[];
+}
+interface ParsedPositions {
+    [address: string]: Position;
 }
 
-
+const PERIPHERAL_POSITIONS_JSON: JsonPositions = JSON.parse(readFileSync("public/positions.json", {encoding: "utf8"}));
+const PERIPHERAL_POSITIONS: ParsedPositions = Object.fromEntries(
+    Object.entries(PERIPHERAL_POSITIONS_JSON)
+    .map((ent)=>{
+        return [ent[0], new Position(ent[1][0], ent[1][1])];
+    })
+);
+console.log(PERIPHERAL_POSITIONS);
 //signal strength currently a distance
 //signal strength should be a negative rssi integer
 export class NetworkTarget {
@@ -32,13 +40,13 @@ export class NetworkTarget {
         const keys = [...this.datapoints.keys()].slice(0, 3);
 
         const d1 = (this.datapoints.get(keys[0]) ?? 0);
-        const p1 = PERIPHERAL_POSITIONS["A"] ?? fallback;
+        const p1 = PERIPHERAL_POSITIONS[keys[0]] ?? fallback;
 
         const d2 = (this.datapoints.get(keys[1]) ?? 0);
-        const p2 = PERIPHERAL_POSITIONS["B"] ?? fallback;
+        const p2 = PERIPHERAL_POSITIONS[keys[1]] ?? fallback;
 
         const d3 = (this.datapoints.get(keys[2]) ?? 0);
-        const p3 = PERIPHERAL_POSITIONS["C"] ?? fallback;
+        const p3 = PERIPHERAL_POSITIONS[keys[2]] ?? fallback;
 
         const xcoef1 = 2*p1.x - 2*p2.x;
         const ycoef1 = 2*p1.y - 2*p2.y;
@@ -72,7 +80,7 @@ export class NetworkTarget {
     }
     addSignalData(peripheralId: string, signalStrength: number) {
         console.log(`Distance to ${this.address} from ${peripheralId} is ${this.rssiToDistance(signalStrength)}m (RSSI=${signalStrength})`)
-        this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength));
+        this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength) * 20);
         this.pos = this.triangulate();
         this.posAverage = this.posAverage.lerp(this.pos, 0.15);
     }
