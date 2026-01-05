@@ -67,6 +67,7 @@ export class NetworkTarget {
         const x = ( C_2*B_1 - B_2*C_1 ) /
                   ( A_2*B_1 - B_2*A_1 );
         const y = (C_1 - A_1*x) / B_1;
+        console.log(`Triangulation succeeded on SSID: ${this.address}`);
         return new Position(x, y);
     }
     addSignalData(peripheralId: string, signalStrength: number) {
