@@ -1,6 +1,12 @@
 import { NetworkTarget } from "@/lib/peripherals";
 
-export const networkObjects = new Map<string, NetworkTarget>()
+type NetworkInfo = {
+    ssid: string,
+    rssi: number
+}
+
+export const networkObjects: Array<NetworkTarget> = [];
+
 export async function POST(request: Request) {
     const body = await request.json();
     
@@ -18,16 +24,12 @@ export async function POST(request: Request) {
         return response;
     }
 
-    body.networkRssis.forEach((netw) => {
-        if (!networkObjects.has(netw["ssid"])) {
-            networkObjects.set(netw["ssid"], new NetworkTarget(netw["ssid"]));
+    body.networkRssis.forEach((netw: NetworkInfo) => {
+        let oldTarget = networkObjects.find((t) => t.address === netw.ssid);
+        if (!oldTarget) {
+            oldTarget = new NetworkTarget(netw.ssid);
         }
-
-        const netTarget = networkObjects.get(netw.ssid);
-        if (!netTarget) {
-            throw new Error("Network targets should exist!");
-        }
-        netTarget.addSignalData(netw.ssid, netw.signalData);
+        oldTarget.addSignalData(body.id, netw.rssi);
     });
 
     
