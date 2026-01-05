@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     console.log(JSON.stringify(body));
 
     if (
-        (!body.networkRssis) ||
+        (!body.networks) ||
         (!body.device)
     ) {
         const response = new Response(null, {
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         return response;
     }
 
-    body.networkRssis.forEach((netw: NetworkInfo) => {
+    body.networks.forEach((netw: NetworkInfo) => {
         let oldTarget = networkObjects.find((t) => t.address === netw.ssid);
         if (!oldTarget) {
             oldTarget = new NetworkTarget(netw.ssid);

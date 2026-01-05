@@ -1,7 +1,7 @@
 import { Position } from "./position";
 
-const PERIPHERAL_ID_WHITELIST: Array<string> = ["A", "B", "C"];
-PERIPHERAL_ID_WHITELIST.push(...(process.env.PERI_WHITELIST || "").trim().split(",").map(x => x.trim()));
+//const PERIPHERAL_ID_WHITELIST: Array<string> = ["A", "B", "C"];
+//PERIPHERAL_ID_WHITELIST.push(...(process.env.PERI_WHITELIST || "").trim().split(",").map(x => x.trim()));
 
 export const PERIPHERAL_POSITIONS = {
     "A": new Position(0, 0),
