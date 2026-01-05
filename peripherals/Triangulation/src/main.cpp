@@ -103,9 +103,7 @@ int sendNetworkInfoToServer(NetworkInfo *networks, int networkCount, String serv
   int httpResponseCode = http.POST(jsonPayload);
   if (httpResponseCode > 0)
   {
-    String response = http.getString();
     Serial.println("Response code: " + String(httpResponseCode));
-    Serial.println("Response: " + response);
   }
   else
   {
