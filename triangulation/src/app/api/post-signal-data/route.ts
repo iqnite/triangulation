@@ -1,4 +1,4 @@
-import { writeNetworks } from "@/lib/networkObjects";
+import { writeLive, writeNetworks } from "@/lib/networkObjects";
 import { NetworkTarget } from "@/lib/peripherals";
 
 export type NetworkInfo = {
@@ -37,6 +37,7 @@ export async function POST(request: Request) {
     body.networks.forEach(net => {
         liveClientMap[body.device][net.ssid] = NetworkTarget.rssiToDistance(net.rssi);
     });
+    writeLive(liveClientMap);
 
     const deviceId = body.device;
 
