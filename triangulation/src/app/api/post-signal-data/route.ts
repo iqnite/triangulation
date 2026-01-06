@@ -11,6 +11,15 @@ export type DeviceData = {
 };
 
 export const incomingData: Array<DeviceData> = [];
+export const liveClientMap: {
+    [
+        espId: string
+    ]: {
+        [
+            ssid: string
+        ]: number
+    }
+} = {};
 
 export async function POST(request: Request) {
     const body = (await request.json()) as {
@@ -21,6 +30,11 @@ export async function POST(request: Request) {
     if (!body.networks || !body.device) {
         return new Response("400 Bad Request", { status: 400 });
     }
+
+    liveClientMap[body.device] = {};
+    body.networks.forEach(net => {
+        liveClientMap[body.device][net.ssid] = net.rssi;
+    });
 
     const deviceId = body.device;
 
