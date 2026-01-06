@@ -87,13 +87,13 @@ export class NetworkTarget {
         console.log(
             `Distance to ${
                 this.address
-            } from ${peripheralId} is ${this.rssiToDistance(
+            } from ${peripheralId} is ${NetworkTarget.rssiToDistance(
                 signalStrength
             )}m (RSSI=${signalStrength})`
         );
         this.datapoints.set(
             peripheralId,
-            this.rssiToDistance(signalStrength) * 20
+            NetworkTarget.rssiToDistance(signalStrength) * 20
         );
         this.pos = this.triangulate();
         this.posAverage = this.posAverage.lerp(this.pos, 0.15);
@@ -102,7 +102,7 @@ export class NetworkTarget {
     checkIfEnoughDatapoints() {
         return [...this.datapoints.keys()].length >= 3;
     }
-    rssiToDistance(rssi: number): number {
+    static rssiToDistance(rssi: number): number {
         const txPower = -51; // RSSI at 1 meter
         return Math.pow(10, (txPower - rssi) / (10 * 2));
     }

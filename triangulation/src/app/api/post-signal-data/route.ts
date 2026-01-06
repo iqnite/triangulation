@@ -10,8 +10,7 @@ export type DeviceData = {
     networks: NetworkInfo[];
 };
 
-export const incomingData: Array<DeviceData> = [];
-export const liveClientMap: {
+export type LiveClientMap = {
     [
         espId: string
     ]: {
@@ -19,7 +18,10 @@ export const liveClientMap: {
             ssid: string
         ]: number
     }
-} = {};
+};
+
+export const incomingData: Array<DeviceData> = [];
+export const liveClientMap: LiveClientMap = {};
 
 export async function POST(request: Request) {
     const body = (await request.json()) as {
@@ -33,7 +35,7 @@ export async function POST(request: Request) {
 
     liveClientMap[body.device] = {};
     body.networks.forEach(net => {
-        liveClientMap[body.device][net.ssid] = net.rssi;
+        liveClientMap[body.device][net.ssid] = NetworkTarget.rssiToDistance(net.rssi);
     });
 
     const deviceId = body.device;
