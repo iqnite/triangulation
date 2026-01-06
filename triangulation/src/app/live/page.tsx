@@ -109,38 +109,50 @@ export default function Page() {
             Object.entries(reverseMap).forEach(entry => {
                 const ssid = entry[0];
                 const circles = entry[1];
-                ctx.globalCompositeOperation = "source-over";
-                ctx.fillStyle = "black";
-                ctx.fillRect(0, 0, vw(1), vh(1));
-
-                ctx.globalCompositeOperation = "lighter";
-                circles.forEach(circ => {
-                    ctx.fillStyle = "rgba(255, 0, 0, 0.34)";
-                    ctx.beginPath();
-                    ctx.arc(rx(circ.x), ry(circ.y), ry(circ.r) + 1.5*devicePixelRatio, 0, 2 * Math.PI);
-                    ctx.fill();
-                });
-
-                const width = Math.floor(vw(1));
-                const pixelData = ctx.getImageData(0, 0, rx(1), ry(1)).data;
-                let denom = 0;
+                if (circles.length < 3) {
+                    return;
+                }
+                let finished = false;
+                let scale = 1;
                 let avx = 0;
                 let avy = 0;
-                for (let i = 0; i < pixelData.length; i+=4) {
-                    const r = pixelData[i + 0];
-                    const g = pixelData[i + 1];
-                    const b = pixelData[i + 2];
-                    const a = pixelData[i + 3];
-                    const px = Math.floor(i / 4) % width;
-                    const py = Math.floor(i / 4 / width);
-                    if (r===255 && g===0 && b===0) {
-                        avx += px;
-                        avy += py;
-                        denom++;
+                while (!finished) {
+                    ctx.globalCompositeOperation = "source-over";
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(0, 0, vw(1), vh(1));
+
+                    ctx.globalCompositeOperation = "lighter";
+                    circles.forEach(circ => {
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.34)";
+                        ctx.beginPath();
+                        ctx.arc(rx(circ.x), ry(circ.y), ry(circ.r*scale) + 1.5*devicePixelRatio, 0, 2 * Math.PI);
+                        ctx.fill();
+                    });
+
+                    const width = Math.floor(vw(1));
+                    const pixelData = ctx.getImageData(0, 0, rx(1), ry(1)).data;
+                    let denom = 0;
+                    
+                    avx = 0;
+                    avy = 0;
+                    for (let i = 0; i < pixelData.length; i+=4) {
+                        const r = pixelData[i + 0];
+                        const g = pixelData[i + 1];
+                        const b = pixelData[i + 2];
+                        const a = pixelData[i + 3];
+                        const px = Math.floor(i / 4) % width;
+                        const py = Math.floor(i / 4 / width);
+                        if (r===255 && g===0 && b===0) {
+                            avx += px;
+                            avy += py;
+                            denom++;
+                            finished = true;
+                        }
                     }
+                    avx /= denom;
+                    avy /= denom;
+                    scale *= 1.5;
                 }
-                avx /= denom;
-                avy /= denom;
                 networkPositions.push({
                     x: avx,
                     y: avy,
