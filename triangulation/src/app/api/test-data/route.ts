@@ -1,10 +1,4 @@
-import { NetworkTarget } from "@/lib/peripherals";
 import { networkObjects } from "../post-signal-data/route";
-
-type NetworkInfo = {
-    ssid: string,
-    rssi: number
-}
 
 export async function GET(request: Request) {
     const reply = networkObjects.map(obj =>
@@ -22,15 +16,3 @@ export async function GET(request: Request) {
     });
     return response;
 }
-/*
-
-{
-networkRssis: [
-{
-ssid: string,
-rssi: -10,
-}
-],
-id: string
-}
-*/
