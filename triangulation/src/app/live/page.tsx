@@ -142,7 +142,7 @@ export default function Page() {
                         const a = pixelData[i + 3];
                         const px = Math.floor(i / 4) % width;
                         const py = Math.floor(i / 4 / width);
-                        if (r===255 && g===0 && b===0) {
+                        if (r > 250 || g > 250 || b > 250) {
                             avx += px;
                             avy += py;
                             denom++;
@@ -152,6 +152,10 @@ export default function Page() {
                     avx /= denom;
                     avy /= denom;
                     scale *= 1.5;
+
+                    if (scale > 3) {
+                        return;
+                    }
                 }
                 networkPositions.push({
                     x: avx,
