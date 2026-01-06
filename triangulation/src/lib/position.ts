@@ -11,4 +11,7 @@ export class Position {
     lerp(other: Position, k: number) {
         return new Position(floatlerp(this.x, other.x, k), floatlerp(this.x, other.x, k));
     }
+    toString(): string {
+        return "{X:"+this.x.toFixed(1)+",Y:"+this.y.toFixed(1)+"}";
+    }
 }
