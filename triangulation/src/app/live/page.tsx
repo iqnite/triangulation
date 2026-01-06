@@ -117,7 +117,7 @@ export default function Page() {
                 circles.forEach(circ => {
                     ctx.fillStyle = "rgba(255, 0, 0, 0.34)";
                     ctx.beginPath();
-                    ctx.arc(rx(circ.x), ry(circ.y), circ.r * vw(0.1) + 1.5, 0, 2 * Math.PI);
+                    ctx.arc(rx(circ.x), ry(circ.y), circ.r * vh(1) + 1.5, 0, 2 * Math.PI);
                     ctx.fill();
                 });
 
