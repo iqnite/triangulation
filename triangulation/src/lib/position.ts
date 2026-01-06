@@ -1,5 +1,5 @@
 function floatlerp(a: number, b: number, k: number): number {
-    return ((b - a) * k) + a;
+    return (b - a) * k + a;
 }
 export class Position {
     public x: number;
@@ -9,9 +9,12 @@ export class Position {
         this.y = y;
     }
     lerp(other: Position, k: number) {
-        return new Position(floatlerp(this.x, other.x, k), floatlerp(this.x, other.x, k));
+        return new Position(
+            floatlerp(this.x, other.x, k),
+            floatlerp(this.x, other.x, k)
+        );
     }
     toString(): string {
-        return "{X:"+this.x.toFixed(1)+",Y:"+this.y.toFixed(1)+"}";
+        return "{X:" + this.x.toFixed(1) + ",Y:" + this.y.toFixed(1) + "}";
     }
 }

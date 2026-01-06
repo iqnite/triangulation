@@ -6,13 +6,13 @@ import { Position } from "./position";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const filePath = path.join(__dirname, "..", "..", "networks.json")
+const filePath = path.join(__dirname, "..", "..", "networks.json");
 
 type NetworkData = {
-    pos: Position,
-    address: string,
-    posAverage: Position
-}
+    pos: Position;
+    address: string;
+    posAverage: Position;
+};
 
 export function readNetworks(): NetworkData[] {
     return JSON.parse(fs.readFileSync(filePath, "utf-8"));
