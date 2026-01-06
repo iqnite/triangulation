@@ -1,12 +1,16 @@
 import { writeNetworks } from "@/lib/networkObjects";
 import { NetworkTarget } from "@/lib/peripherals";
 
-type NetworkInfo = {
-    ssid: string,
-    rssi: number
-}
+export type NetworkInfo = {
+    ssid: string;
+    rssi: number;
+};
+export type DeviceData = {
+    device: string;
+    networks: NetworkInfo[];
+};
 
-export const incomingData: Array<{ device: string, networks: NetworkInfo[] }> = [];
+export const incomingData: Array<DeviceData> = [];
 
 
 export async function POST(request: Request) {
