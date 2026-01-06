@@ -1,4 +1,4 @@
-import { networkObjects } from "../post-signal-data/route";
+import { readNetworks } from "@/lib/networkObjects";
 
 export type NetworkInfo = {
     ssid: string,
@@ -6,8 +6,8 @@ export type NetworkInfo = {
     ready: boolean, //if the network has been located as a coordinate
 }
 
-export async function GET(request: Request) {
-    return Response.json(networkObjects.map(net => {
+export async function GET() {
+    return Response.json(readNetworks().map(net => {
         return {
             ssid: net.address,
             pos: { x: net.posAverage.x, y: net.posAverage.y },

@@ -1,3 +1,4 @@
+import { writeNetworks } from "@/lib/networkObjects";
 import { NetworkTarget } from "@/lib/peripherals";
 
 type NetworkInfo = {
@@ -5,48 +6,51 @@ type NetworkInfo = {
     rssi: number
 }
 
-export const networkObjects: Array<NetworkTarget> = [];
+export const incomingData: Array<{ device: string, networks: NetworkInfo[] }> = [];
+
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    
-    console.log(JSON.stringify(body));
+    const body = await request.json() as { device: string, networks: NetworkInfo[] };
 
-    if (
-        (!body.networks) ||
-        (!body.device)
-    ) {
-        const response = new Response(null, {
-            status: 400, statusText: "Your network request sucks", headers: {
-                "Reply": "Bad-Job"
-            }
-        });
-        return response;
+    if (!body.networks || !body.device) {
+        return new Response("400 Bad Request", { status: 400 });
     }
 
-    body.networks.forEach((netw: NetworkInfo) => {
-        let oldTarget = networkObjects.find((t) => t.address === netw.ssid);
-        if (!oldTarget) {
-            oldTarget = new NetworkTarget(netw.ssid);
-            networkObjects.push(oldTarget);
-        }
-        oldTarget.addSignalData(body.device, netw.rssi);
-    });
+    const deviceId = body.device;
 
-    //pass to remove old networks
-    const now = Date.now();
-    const deleteQueue = networkObjects.filter(x => (now - x.lastUpdated) > 1000 * 60 * 1.5);
-    //1.5 minute old networks are unregistered
-    deleteQueue.forEach(x => {
-        networkObjects.splice(networkObjects.indexOf(x), 1);
-    });
-
-    const response = new Response(null, {
-        status: 200, statusText: "OK", headers: {
-            "Reply": "Good-Job"
+    if (incomingData.some((d) => d.device == deviceId)) {
+        console.log("Conflict: Device data already exists");
+        return new Response("409 Conflict", { status: 409 });
+    } else {
+        incomingData.push(body);
+        if (incomingData.length >= 3) {
+            const networkObjects: NetworkTarget[] = [];
+            console.log("Starting data completion")
+            for (const d of incomingData) {
+                console.log(`-- Processing data from device: ${d.device} --`)
+                // add to networkobjects, and update sensors if already exist
+                for (const n of d.networks) {
+                    const existingNetwork = networkObjects.find((no) => no.address == n.ssid);
+                    if (existingNetwork) {
+                        existingNetwork.addSignalData(d.device, n.rssi)
+                        console.log(`Updated existing network: ${n.ssid} with data from device: ${d.device}, total datapoints: ${existingNetwork.datapoints.size}`)
+                    } else {
+                        networkObjects.push(new NetworkTarget(n.ssid).addSignalData(d.device, n.rssi))
+                        console.log(`Added new network: ${n.ssid} with data from device: ${d.device}`)
+                    }
+                }
+            }
+            console.log("Data processing complete", networkObjects[0].pos)
+            incomingData.splice(0, incomingData.length);
+            writeNetworks(networkObjects.filter(no => no.pos.x != 0).map((no) => ({
+                address: no.address,
+                pos: no.pos,
+                posAverage: no.posAverage
+            })));
         }
-    });
-    return response;
+    }
+
+    return new Response(null, {status: 200});
 }
 /*
 

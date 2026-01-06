@@ -17,7 +17,6 @@ const PERIPHERAL_POSITIONS: ParsedPositions = Object.fromEntries(
         return [ent[0], new Position(ent[1][0], ent[1][1])];
     })
 );
-console.log(PERIPHERAL_POSITIONS);
 //signal strength currently a distance
 //signal strength should be a negative rssi integer
 export class NetworkTarget {
@@ -35,7 +34,8 @@ export class NetworkTarget {
         this.lastUpdated = Date.now();
         this.ready = false;
     }
-    triangulate() {
+    triangulate(overridePositions?: ParsedPositions) {
+        const USED_POSITIONS = overridePositions || PERIPHERAL_POSITIONS;
         if (!this.checkIfEnoughDatapoints()) {
             return new Position(0, 0);
         }
@@ -44,13 +44,13 @@ export class NetworkTarget {
         const keys = [...this.datapoints.keys()].slice(0, 3);
 
         const d1 = (this.datapoints.get(keys[0]) ?? 0);
-        const p1 = PERIPHERAL_POSITIONS[keys[0]] ?? fallback;
+        const p1 = USED_POSITIONS[keys[0]] ?? fallback;
 
         const d2 = (this.datapoints.get(keys[1]) ?? 0);
-        const p2 = PERIPHERAL_POSITIONS[keys[1]] ?? fallback;
+        const p2 = USED_POSITIONS[keys[1]] ?? fallback;
 
         const d3 = (this.datapoints.get(keys[2]) ?? 0);
-        const p3 = PERIPHERAL_POSITIONS[keys[2]] ?? fallback;
+        const p3 = USED_POSITIONS[keys[2]] ?? fallback;
 
         const xcoef1 = 2*p1.x - 2*p2.x;
         const ycoef1 = 2*p1.y - 2*p2.y;
@@ -88,7 +88,7 @@ export class NetworkTarget {
         this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength) * 20);
         this.pos = this.triangulate();
         this.posAverage = this.posAverage.lerp(this.pos, 0.15);
-        this.lastUpdated = Date.now();
+        return this;
     }
     checkIfEnoughDatapoints() {
         return [...this.datapoints.keys()].length >= 3;
