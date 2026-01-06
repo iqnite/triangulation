@@ -93,3 +93,6 @@ export class NetworkTarget {
     }
 }
 
+// esp32 = EC:94:* (small, black board)
+// esp8266 = D8:F1:* (large breadboard)
+// CYD = 10:06:* (cheap yellow display)
