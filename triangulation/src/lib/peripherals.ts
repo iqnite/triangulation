@@ -25,11 +25,13 @@ export class NetworkTarget {
     pos: Position;
     address: string;
     posAverage: Position;
+    lastUpdated: number;
     constructor(address: string) {
         this.address = address;
         this.datapoints = new Map();
         this.pos = new Position(0, 0);
         this.posAverage = new Position(0, 0);
+        this.lastUpdated = Date.now();
     }
     triangulate() {
         if (!this.checkIfEnoughDatapoints()) {
@@ -83,6 +85,7 @@ export class NetworkTarget {
         this.datapoints.set(peripheralId, this.rssiToDistance(signalStrength) * 20);
         this.pos = this.triangulate();
         this.posAverage = this.posAverage.lerp(this.pos, 0.15);
+        this.lastUpdated = Date.now();
     }
     checkIfEnoughDatapoints() {
         return [...this.datapoints.keys()].length >= 3;

@@ -33,7 +33,13 @@ export async function POST(request: Request) {
         oldTarget.addSignalData(body.device, netw.rssi);
     });
 
-    
+    //pass to remove old networks
+    const now = Date.now();
+    const deleteQueue = networkObjects.filter(x => (now - x.lastUpdated) > 1000 * 60 * 1.5);
+    //1.5 minute old networks are unregistered
+    deleteQueue.forEach(x => {
+        networkObjects.splice(networkObjects.indexOf(x), 1);
+    });
 
     const response = new Response(null, {
         status: 200, statusText: "OK", headers: {
