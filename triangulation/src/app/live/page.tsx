@@ -52,7 +52,11 @@ export default function Page() {
         resize();
         window.addEventListener("resize", resize);
         canvas.addEventListener("click", (ev) => {
-            console.log(`Relclick Position: X=${(ev.clientX / vw(1)).toFixed(4)}, Y=${(ev.clientY / vh(1)).toFixed(4)}`);
+            const x = ((ev.layerX * devicePixelRatio) / (vh(1) * 1.7));
+            const y = ((ev.layerY * devicePixelRatio) / (vh(1) * 1));
+            console.log(`Relclick Position: X=${x.toFixed(4)}, Y=${y.toFixed(4)}`);
+            espPositions["ClickEvent"] = [x, y];
+            frame();
         });
         type Circle = {
             x: number,
@@ -143,6 +147,8 @@ export default function Page() {
                     ssid: ssid
                 });
             });
+            ctx.shadowColor = "none";
+            ctx.shadowBlur = 0;
             ctx.globalCompositeOperation = "source-over";
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, vw(1), vh(1));
