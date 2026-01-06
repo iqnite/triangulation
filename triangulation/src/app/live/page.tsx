@@ -163,9 +163,11 @@ export default function Page() {
                 ctx.beginPath();
                 ctx.shadowColor = "black";
                 ctx.fillStyle = "black";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2 * devicePixelRatio;
                 ctx.shadowBlur = 6;
                 ctx.arc(rx(espEnt[1][0]), ry(espEnt[1][1]), 9 * devicePixelRatio, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.stroke();
                 ctx.shadowBlur = 6;
 
                 ctx.font = "16px monospace";
