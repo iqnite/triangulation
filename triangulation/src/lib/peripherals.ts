@@ -25,6 +25,7 @@ export class NetworkTarget {
     pos: Position;
     address: string;
     posAverage: Position;
+    ready: boolean; //has a trilateration occured
     lastUpdated: number;
     constructor(address: string) {
         this.address = address;
@@ -32,6 +33,7 @@ export class NetworkTarget {
         this.pos = new Position(0, 0);
         this.posAverage = new Position(0, 0);
         this.lastUpdated = Date.now();
+        this.ready = false;
     }
     triangulate() {
         if (!this.checkIfEnoughDatapoints()) {
@@ -78,6 +80,7 @@ export class NetworkTarget {
                   ( A_2*B_1 - B_2*A_1 );
         const y = (C_1 - A_1*x) / B_1;
         console.log(`Triangulation succeeded on SSID: ${this.address}`);
+        this.ready = true;
         return new Position(x, y);
     }
     addSignalData(peripheralId: string, signalStrength: number) {
