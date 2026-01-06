@@ -178,7 +178,7 @@ export default function Page() {
 
                 ctx.font = "16px monospace";
                 ctx.textAlign = "center";
-                ctx.fillText(espEnt[0], rx(espEnt[1][0]), ry(espEnt[1][1]) + 24);
+                ctx.fillText(espEnt[0], rx(espEnt[1][0]), ry(espEnt[1][1]) + 28);
             });
 
             networkPositions.forEach((net, i) => {
@@ -193,7 +193,7 @@ export default function Page() {
                 
                 ctx.font = "16px monospace";
                 ctx.textAlign = "center";
-                ctx.fillText(net.ssid, net.x, net.y + 24);
+                ctx.fillText(net.ssid, net.x, net.y + 28);
             });
 
             console.log("frame rendered!", networkPositions);
