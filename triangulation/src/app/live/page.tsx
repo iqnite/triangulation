@@ -31,6 +31,7 @@ export default function Page() {
             frame();
         }
         setInterval(fetchDataFromServer, 10000);
+        fetchDataFromServer();
 
         function vw(x: number) {
             return x * innerWidth * devicePixelRatio;
@@ -70,6 +71,12 @@ export default function Page() {
             ssid: string
         }
         const colors = ["magenta", "red", "cyan", "limegreen", "yellow"];
+        function rx(x:number) {
+            return vh(1) * x * 1.70346;
+        }
+        function ry(y:number) {
+            return vh(1) * y;
+        }
         function frame() {
             if (!ctx || !canvas) {
                 return;
@@ -92,6 +99,9 @@ export default function Page() {
             });
             const networkPositions: ExtractedNetwork[] = [];
 
+            ctx.shadowColor = "none";
+            ctx.shadowBlur = 6;
+
             Object.entries(reverseMap).forEach(entry => {
                 const ssid = entry[0];
                 const circles = entry[1];
@@ -103,12 +113,12 @@ export default function Page() {
                 circles.forEach(circ => {
                     ctx.fillStyle = "rgba(255, 0, 0, 0.34)";
                     ctx.beginPath();
-                    ctx.arc(circ.x * vw(1) + vw(0.5), circ.y * vh(1) + vh(0.5), circ.r * vw(0.1) + 1.5, 0, 2 * Math.PI);
+                    ctx.arc(rx(circ.x), ry(circ.y), circ.r * vw(0.1) + 1.5, 0, 2 * Math.PI);
                     ctx.fill();
                 });
 
                 const width = Math.floor(vw(1));
-                const pixelData = ctx.getImageData(0, 0, vw(1), vh(1)).data;
+                const pixelData = ctx.getImageData(0, 0, rx(1), ry(1)).data;
                 let denom = 0;
                 let avx = 0;
                 let avy = 0;
@@ -138,7 +148,7 @@ export default function Page() {
             ctx.fillRect(0, 0, vw(1), vh(1));
             const map = document.querySelector("img#map");
             if (map instanceof HTMLImageElement) {
-                ctx.drawImage(map, 0, 0, vw(1), vh(1));
+                ctx.drawImage(map, 0, 0, vh(1) * 1.70346, vh(1));
             }
 
             networkPositions.map(x => {
@@ -147,15 +157,31 @@ export default function Page() {
                 return sorter;
             }).sort().map(x => x.original);
 
+            console.log(espPositions);
+            Object.entries(espPositions).forEach(espEnt => {
+                ctx.fillStyle = "black";
+                ctx.beginPath();
+                ctx.shadowColor = "black";
+                ctx.fillStyle = "black";
+                ctx.shadowBlur = 6;
+                ctx.arc(rx(espEnt[1][0]), ry(espEnt[1][1]), 9 * devicePixelRatio, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 6;
+
+                ctx.font = "16px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText(espEnt[0], rx(espEnt[1][0]), ry(espEnt[1][1]) + 24);
+            });
+
             networkPositions.forEach((net, i) => {
                 ctx.beginPath();
-                console.log(net.x, net.y);
                 const col = colors[i % colors.length];
                 ctx.shadowColor = col;
+                ctx.shadowBlur = 6;
                 ctx.fillStyle = col;
                 ctx.arc(net.x, net.y, 9 * devicePixelRatio, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.shadowBlur = 6;
+                
                 
                 ctx.font = "16px monospace";
                 ctx.textAlign = "center";
@@ -163,6 +189,8 @@ export default function Page() {
             });
 
             console.log("frame rendered!", networkPositions);
+
+            //1.7034611786716558 is svg aspect ratio
         }
         frame();
 
