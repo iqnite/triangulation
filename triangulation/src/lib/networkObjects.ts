@@ -25,9 +25,9 @@ export function writeNetworks(data: NetworkData[]) {
 }
 
 export function readLive(): LiveClientMap {
-    return JSON.parse(fs.readFileSync(networkFilePath, "utf-8"));
+    return JSON.parse(fs.readFileSync(liveFilePath, "utf-8"));
 }
 
 export function writeLive(data: LiveClientMap) {
-    fs.writeFileSync(networkFilePath, JSON.stringify(data, null, 2), "utf-8");
+    fs.writeFileSync(liveFilePath, JSON.stringify(data, null, 2), "utf-8");
 }
