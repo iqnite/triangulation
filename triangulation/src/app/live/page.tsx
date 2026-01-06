@@ -97,7 +97,7 @@ export default function Page() {
                         espId,
                         x: espPositions[espId][0],
                         y: espPositions[espId][1],
-                        r: dist
+                        r: dist / 60.67
                     })
                 })
             });
