@@ -123,10 +123,11 @@ export default function Page() {
 
                     ctx.globalCompositeOperation = "lighter";
                     circles.forEach(circ => {
-                        ctx.fillStyle = "rgba(255, 0, 0, 0.34)";
+                        ctx.strokeStyle = "rgba(255, 0, 0, 0.34)";
+                        ctx.lineWidth = 6 * devicePixelRatio;
                         ctx.beginPath();
                         ctx.arc(rx(circ.x), ry(circ.y), ry(circ.r*scale) + 1.5*devicePixelRatio, 0, 2 * Math.PI);
-                        ctx.fill();
+                        ctx.stroke();
                     });
 
                     const width = Math.floor(vw(1));
